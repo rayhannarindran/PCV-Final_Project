@@ -13,7 +13,7 @@ FRAME_RATE = 10
 
 # Source Video; 0 = Kamera ; path ke video
 sourceVideo = 0
-sourceAudio = "Casino.wav"
+sourceAudio = "Casino.mp3"
 
 # Set Text
 fontpath_casino = "Casino.ttf"
