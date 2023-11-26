@@ -11,4 +11,4 @@ Future Possibilities:
 Jadwal Demo:
 1. 13/November/2023 - 50% Code, Deteksi Kartu
 2. 20/November/2023 - 100% Code, Blackjack Mechanism
-3. 
+3. 27/November/2023 - Added COM Decision Making
