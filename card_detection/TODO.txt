@@ -1,3 +1,5 @@
+THIS IS TESTING BRANCH!
+
 1. Add AI to blackjack COM, simple decision making based on players, computers, and dealers cards
 2. Add better UI (card listing, better separation, background casino?)
 3. Add light thresholding (biar bisa di deteksi di range cahaya yang lebih luas)
