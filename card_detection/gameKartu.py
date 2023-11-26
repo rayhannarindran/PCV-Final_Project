@@ -43,6 +43,12 @@ mixer.music.play(-1)
 time_start = time.time()
 bufferKartu = []
 
+# Wins
+# TODO: Jika menang, save state dengan "enter" dan reset dengan "delete"
+# TODO: Opsi save state akan muncul ketika salah satu player menang
+win_player = 0
+win_computer = 0
+
 while(True):
     ret, image = video.read()
 

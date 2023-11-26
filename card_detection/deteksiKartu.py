@@ -259,7 +259,7 @@ def game(kartu):
             permainan.computer_state = "Computer BUST"
     
     # * State antara Player dan Computer
-    if len(permainan.dealer) >= 2 or permainan.point_player == 21 or permainan.point_computer == 21:
+    if len(permainan.dealer) >= 2 or permainan.point_player >= 21 or permainan.point_computer >= 21:
         if permainan.computer_state == "Computer Lost" or permainan.computer_state == "Computer BUST":
             if permainan.player_state == "Player Won":
                 permainan.player_state = "Player Won to COM"
