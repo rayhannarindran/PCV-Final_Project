@@ -140,8 +140,6 @@ while(True):
         draw.text((IM_WIDTH//2 + 220, 20 + (i*50)), game.dealer[i].prediksi_angka, font=font_cards, fill=green,
                   stroke_width=2, stroke_fill=white)
         
-        
-
     # Show Video
     image = np.array(image_pil)
     cv2.imshow("Video", image)
