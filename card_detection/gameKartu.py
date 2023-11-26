@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from PIL import ImageFont, ImageDraw, Image
 import time
 import pygame
 from pygame import mixer
@@ -13,6 +14,19 @@ FRAME_RATE = 10
 # Source Video; 0 = Kamera ; path ke video
 sourceVideo = 0
 sourceAudio = "Casino.wav"
+
+# Set Text
+fontpath_casino = "Casino.ttf"
+fontpath_cards = "CardsFont.ttf"
+font_casino = ImageFont.truetype(fontpath_casino, 30)
+font_casino_state = ImageFont.truetype(fontpath_casino, 70)
+font_cards = ImageFont.truetype(fontpath_cards, 50)
+
+black = (0,0,0,0)
+red = (0,0,200,0)
+white = (255,255,255,0)
+purple = (200,0,200,0)
+green = (0,170,0,0)
 
 # Set Video
 video = cv2.VideoCapture(sourceVideo)
@@ -57,48 +71,79 @@ while(True):
     # * LOOP PERMAINAN
     game = dk.game(bufferKartu)
 
+    # * UI DAN POIN PEMAIN
+    image = cv2.line(image, (0, IM_HEIGHT//2), (IM_WIDTH//2 + 200, IM_HEIGHT//2), (190, 0, 0), 10)
+    image = cv2.line(image, (IM_WIDTH//2 + 200, 0), (IM_WIDTH//2 + 200, IM_HEIGHT), (190, 0, 0), 10)
+
+    image = cv2.line(image, (0, IM_HEIGHT//2), (IM_WIDTH//2 + 200, IM_HEIGHT//2), (255, 255, 255), 2)    
+    image = cv2.line(image, (IM_WIDTH//2 + 200, 0), (IM_WIDTH//2 + 200, IM_HEIGHT), (255, 255, 255), 2)
+
+    # * Image Conversion (Untuk text dengan PIL)
+    image_pil = Image.fromarray(image)
+    draw = ImageDraw.Draw(image_pil)
+
     # * STATE PEMAIN
     if len(game.player_state) > 1:
         textSize_P = cv2.getTextSize(game.player_state, cv2.FONT_HERSHEY_PLAIN, 3, 4)[0]
         textX_P = ((IM_WIDTH//2 + 200) - (textSize_P[0]))//2
         textY_P = (IM_HEIGHT//4) - (textSize_P[1]//2)
-        image = cv2.putText(image, game.player_state, (textX_P, textY_P), cv2.FONT_HERSHEY_PLAIN, 3, (0,0,0), 12)
-        image = cv2.putText(image, game.player_state, (textX_P, textY_P), cv2.FONT_HERSHEY_PLAIN, 3, (100,255,100), 4)
+        draw.text((textX_P, textY_P), game.player_state, font=font_casino_state, fill=red,
+                  stroke_width=4, stroke_fill=white)
 
     if len(game.computer_state) > 1:
         textSize_C = cv2.getTextSize(game.computer_state, cv2.FONT_HERSHEY_PLAIN, 3, 4)[0]
         textX_C = ((IM_WIDTH//2 + 200) - textSize_C[0])//2
         textY_C = ((IM_HEIGHT*3)//4) - (textSize_C[1]//2)
-        image = cv2.putText(image, game.computer_state, (textX_C, textY_C), cv2.FONT_HERSHEY_PLAIN, 3, (0,0,0), 12)
-        image = cv2.putText(image, game.computer_state, (textX_C, textY_C), cv2.FONT_HERSHEY_PLAIN, 3, (100,255,100), 4)
+        draw.text((textX_C, textY_C), game.computer_state, font=font_casino_state, fill=red,
+                  stroke_width=4, stroke_fill=white)
 
     if len(game.dealer_state) > 1:
         textSize_D = cv2.getTextSize(game.dealer_state, cv2.FONT_HERSHEY_PLAIN, 3, 4)[0]
         textX_D = (IM_WIDTH//2 + 200)+((IM_WIDTH - (IM_WIDTH//2 + 200))//2) - textSize_D[0]//2
         textY_D = (IM_HEIGHT - textSize_D[1])//2
-        image = cv2.putText(image, game.dealer_state, (textX_D, textY_D), cv2.FONT_HERSHEY_PLAIN, 3, (0,0,0), 12)
-        image = cv2.putText(image, game.dealer_state, (textX_D, textY_D), cv2.FONT_HERSHEY_PLAIN, 3, (100,255,100), 4)
+        draw.text((textX_D, textY_D), game.dealer_state, font=font_casino_state, fill=red,
+                  stroke_width=4, stroke_fill=white)
 
-    # * UI DAN POIN PEMAIN
-    image = cv2.line(image, (0, IM_HEIGHT//2), (IM_WIDTH//2 + 200, IM_HEIGHT//2), (0, 255, 0), 3)
-    image = cv2.line(image, (IM_WIDTH//2 + 200, 0), (IM_WIDTH//2 + 200, IM_HEIGHT), (0, 255, 0), 3)
+    # * POIN PEMAIN
+    draw.text((15, 15), "Player", font=font_casino, fill=white,
+              stroke_width=3, stroke_fill=black)
+    draw.text((15, 45), "pts: " + str(game.point_player), font=font_casino, fill=white,
+              stroke_width=3, stroke_fill=black)
 
-    image = cv2.putText(image, "Player", (50, 50), cv2.FONT_HERSHEY_PLAIN, 3, (0,0,0), 12)
-    image = cv2.putText(image, "Player", (50, 50), cv2.FONT_HERSHEY_PLAIN, 3, (255,255,255), 4)
-    image = cv2.putText(image, str(game.point_player), (110, 110), cv2.FONT_HERSHEY_PLAIN, 3, (0,0,0), 12)
-    image = cv2.putText(image, str(game.point_player), (110, 110), cv2.FONT_HERSHEY_PLAIN, 3, (255,255,255), 4)
+    draw.text((15, IM_HEIGHT - 40), "Computer", font=font_casino, fill=purple,
+              stroke_width=3, stroke_fill=white)
+    draw.text((15, IM_HEIGHT - 70), "pts: " + str(game.point_computer), font=font_casino, fill=purple,
+              stroke_width=3, stroke_fill=white)
 
-    image = cv2.putText(image, "Computer", (50, IM_HEIGHT - 20), cv2.FONT_HERSHEY_PLAIN, 3, (0,0,0), 12)
-    image = cv2.putText(image, "Computer", (50, IM_HEIGHT - 20), cv2.FONT_HERSHEY_PLAIN, 3, (100,100,255), 4)
-    image = cv2.putText(image, str(game.point_computer), (150, IM_HEIGHT - 70), cv2.FONT_HERSHEY_PLAIN, 3, (0,0,0), 12)
-    image = cv2.putText(image, str(game.point_computer), (150, IM_HEIGHT - 70), cv2.FONT_HERSHEY_PLAIN, 3, (100,100,255), 4)
+    draw.text((IM_WIDTH - 125, IM_HEIGHT - 40), "Dealer", font=font_casino, fill=green,
+              stroke_width=3, stroke_fill=white)
+    draw.text((IM_WIDTH - 125, IM_HEIGHT - 70), "pts: " + str(game.point_dealer), font=font_casino, fill=green,
+              stroke_width=3, stroke_fill=white)
 
-    image = cv2.putText(image, "Dealer", (IM_WIDTH - 170, IM_HEIGHT - 20), cv2.FONT_HERSHEY_PLAIN, 3, (0,0,0), 12)
-    image = cv2.putText(image, "Dealer", (IM_WIDTH - 170, IM_HEIGHT - 20), cv2.FONT_HERSHEY_PLAIN, 3, (255,0,100), 4)
-    image = cv2.putText(image, str(game.point_dealer), (IM_WIDTH - 110, IM_HEIGHT - 70), cv2.FONT_HERSHEY_PLAIN, 3, (0,0,0), 12)
-    image = cv2.putText(image, str(game.point_dealer), (IM_WIDTH - 110, IM_HEIGHT - 70), cv2.FONT_HERSHEY_PLAIN, 3, (255,0,100), 4)
+    # * KARTU PEMAIN
+    temp_kartu_player = []
+    temp_kartu_computer = []
+    temp_kartu_dealer = []
+
+    for i in range(len(game.player)):
+        temp_kartu_player.append(game.player[i].angka)
+        draw.text((IM_WIDTH//2 + 160 - (i*50), IM_HEIGHT//2 - 60), game.player[i].prediksi_angka, font=font_cards, fill=white,
+                  stroke_width=2, stroke_fill=black)
+
+    for i in range(len(game.computer)):
+        temp_kartu_computer.append(game.computer[i].angka)
+        draw.text((IM_WIDTH//2 + 160 - (i*50), IM_HEIGHT - 50), game.computer[i].prediksi_angka, font=font_cards, fill=purple, 
+                  stroke_width=2, stroke_fill=white)
+
+    for i in range(len(game.dealer)):
+        temp_kartu_dealer.append(game.dealer[i].angka)
+        draw.text((IM_WIDTH//2 + 220, 20 + (i*50)), game.dealer[i].prediksi_angka, font=font_cards, fill=green,
+                  stroke_width=2, stroke_fill=white)
+        
+        
 
     # Show Video
+    image = np.array(image_pil)
     cv2.imshow("Video", image)
 
     # Uncomment untuk lihat deteksi kartu
