@@ -1,0 +1,14 @@
+1. Add AI to blackjack COM, simple decision making based on players, computers, and dealers cards
+2. Add better UI (card listing, better separation, background casino?)
+3. Add light thresholding (biar bisa di deteksi di range cahaya yang lebih luas)
+4. Train lebih banyak gambar based on new codebase, detection still gets weird sometimes.
+5. Add music (DONE!)
+6. Add SFX
+
+Future Possibilities:
+1. Add AI based on Card Counting Algorithm (HARD DIFFICULTY)
+
+Jadwal Demo:
+1. 13/November/2023 - 50% Code, Deteksi Kartu
+2. 20/November/2023 - 100% Code, Blackjack Mechanism
+3. 
