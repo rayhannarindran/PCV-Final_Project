@@ -18,9 +18,9 @@ sourceAudio = "Casino.mp3"
 # Set Text
 fontpath_casino = "Casino.ttf"
 fontpath_cards = "CardsFont.ttf"
-font_casino = ImageFont.truetype(fontpath_casino, 30)
+font_casino = ImageFont.truetype(fontpath_casino, 40)
 font_casino_state = ImageFont.truetype(fontpath_casino, 70)
-font_cards = ImageFont.truetype(fontpath_cards, 50)
+font_cards = ImageFont.truetype(fontpath_cards, 40)
 
 black = (0,0,0,0)
 red = (0,0,200,0)
@@ -64,7 +64,7 @@ while(True):
             kartu.append(dk.prosesKartu(image, contours[i], approx[i], IM_WIDTH, IM_HEIGHT))
         
     # ! Program hanya mendeteksi setiap 3 detik (agar tidak lagging)
-    if time.time() - time_start > 3:
+    if time.time() - time_start > 2:
         bufferKartu = kartu
         for i in range(len(bufferKartu)):
             kartu[i].prediksi_angka = dk.prediksiKartu(kartu[i])
@@ -76,6 +76,10 @@ while(True):
 
     # * LOOP PERMAINAN
     game = dk.game(bufferKartu)
+
+    if len(game.player) > 0:
+        print(game.player[0].prediksi_angka)
+        print(game.point_player)
 
     # * UI DAN POIN PEMAIN
     image = cv2.line(image, (0, IM_HEIGHT//2), (IM_WIDTH//2 + 200, IM_HEIGHT//2), (190, 0, 0), 10)
@@ -113,17 +117,17 @@ while(True):
     # * POIN PEMAIN
     draw.text((15, 15), "Player", font=font_casino, fill=white,
               stroke_width=3, stroke_fill=black)
-    draw.text((15, 45), "pts: " + str(game.point_player), font=font_casino, fill=white,
+    draw.text((15, 50), "pts: " + str(game.point_player), font=font_casino, fill=white,
               stroke_width=3, stroke_fill=black)
 
     draw.text((15, IM_HEIGHT - 40), "Computer", font=font_casino, fill=purple,
               stroke_width=3, stroke_fill=white)
-    draw.text((15, IM_HEIGHT - 70), "pts: " + str(game.point_computer), font=font_casino, fill=purple,
+    draw.text((15, IM_HEIGHT - 75), "pts: " + str(game.point_computer), font=font_casino, fill=purple,
               stroke_width=3, stroke_fill=white)
 
-    draw.text((IM_WIDTH - 125, IM_HEIGHT - 40), "Dealer", font=font_casino, fill=green,
+    draw.text((IM_WIDTH - 150, IM_HEIGHT - 40), "Dealer", font=font_casino, fill=green,
               stroke_width=3, stroke_fill=white)
-    draw.text((IM_WIDTH - 125, IM_HEIGHT - 70), "pts: " + str(game.point_dealer), font=font_casino, fill=green,
+    draw.text((IM_WIDTH - 150, IM_HEIGHT - 75), "pts: " + str(game.point_dealer), font=font_casino, fill=green,
               stroke_width=3, stroke_fill=white)
 
     # * KARTU PEMAIN
