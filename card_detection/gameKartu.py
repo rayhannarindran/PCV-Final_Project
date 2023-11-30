@@ -62,7 +62,7 @@ while(True):
     if len(contours) != 0:
         for i in range(len(contours)):
             kartu.append(dk.prosesKartu(image, contours[i], approx[i], IM_WIDTH, IM_HEIGHT))
-        
+    
     # ! Program hanya mendeteksi setiap 3 detik (agar tidak lagging)
     if time.time() - time_start > 2:
         bufferKartu = kartu
