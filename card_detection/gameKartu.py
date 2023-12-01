@@ -4,6 +4,7 @@ from PIL import ImageFont, ImageDraw, Image
 import time
 import pygame
 from pygame import mixer
+import copy
 import deteksiKartu as dk
 
 # * SETTING KAMERA
@@ -14,6 +15,8 @@ FRAME_RATE = 10
 # Source Video; 0 = Kamera ; path ke video
 sourceVideo = 0
 sourceAudio = "Casino.mp3"
+winAudio = "Win.mp3"
+loseAudio = "Lose.mp3"
 
 # Set Text
 fontpath_casino = "Casino.ttf"
@@ -38,16 +41,19 @@ video.set(cv2.CAP_PROP_FPS, FRAME_RATE)
 pygame.init()
 mixer.music.load(sourceAudio)
 mixer.music.play(-1)
+winSFX = mixer.Sound(winAudio)
+loseSFX = mixer.Sound(loseAudio)
 
-# Timer dan Buffer
-time_start = time.time()
+# Timer, buffer, and game
+frameCounter = 0
+detectionTimer = time.time()
+winCheckCounter = 0 # Jika state Win atau Lose, maka akan menunggu 60 frame untuk mengecek input
 bufferKartu = []
+bufferKartuCheckWin = []
 
 # Wins
-# TODO: Jika menang, save state dengan "enter" dan reset dengan "delete"
-# TODO: Opsi save state akan muncul ketika salah satu player menang
-win_player = 0
-win_computer = 0
+playerWins = 0
+computerWins = 0
 
 while(True):
     ret, image = video.read()
@@ -63,12 +69,13 @@ while(True):
         for i in range(len(contours)):
             kartu.append(dk.prosesKartu(image, contours[i], approx[i], IM_WIDTH, IM_HEIGHT))
     
-    # ! Program hanya mendeteksi setiap 3 detik (agar tidak lagging)
-    if time.time() - time_start > 2:
+    # ! Program hanya mendeteksi setiap 1 detik (agar tidak lagging)
+    if time.time() - detectionTimer > 1:
         bufferKartu = kartu
         for i in range(len(bufferKartu)):
-            kartu[i].prediksi_angka = dk.prediksiKartu(kartu[i])
-        time_start = time.time()
+            kartu[i].prediksi_angka = dk.prediksiKartu(bufferKartu[i])
+        bufferKartu = dk.sortKartu(bufferKartu)
+        detectionTimer = time.time()
 
     # * GAMBAR CONTOUR DAN ANGKA KARTU
     for i in range(len(bufferKartu)):
@@ -77,9 +84,9 @@ while(True):
     # * LOOP PERMAINAN
     game = dk.game(bufferKartu)
 
-    if len(game.player) > 0:
-        print(game.player[0].prediksi_angka)
-        print(game.point_player)
+    # ! Untuk Win/Lose/Draw Screen
+    imagePilSave = Image.fromarray(copy.deepcopy(image))
+    drawSave = ImageDraw.Draw(imagePilSave)
 
     # * UI DAN POIN PEMAIN
     image = cv2.line(image, (0, IM_HEIGHT//2), (IM_WIDTH//2 + 200, IM_HEIGHT//2), (190, 0, 0), 10)
@@ -150,14 +157,68 @@ while(True):
         draw.text((IM_WIDTH//2 + 220, 20 + (i*50)), game.dealer[i].prediksi_angka, font=font_cards, fill=green,
                   stroke_width=2, stroke_fill=white)
         
+    # * WINS PEMAIN
+    draw.text((IM_WIDTH//2 + 30, 10), "Wins: " + str(playerWins), font=font_casino, fill=white,
+              stroke_width=3, stroke_fill=black)
+    draw.text((IM_WIDTH//2 + 30, IM_HEIGHT//2 + 15), "Wins: " + str(computerWins), font=font_casino, fill=purple,
+                stroke_width=3, stroke_fill=white)
+
+    # * Check Wins
+    if frameCounter % 10 == 0:
+        bufferKartuCheckWin = bufferKartu
+        bufferKartuCheckWin = dk.sortKartu(bufferKartuCheckWin)
+
+    if game.player_state == "Win" or game.player_state == "Lose" or game.computer_state == "Win" or game.computer_state == "Lose" or game.player_state == "Draw" or game.computer_state == "Draw":
+        if bufferKartuCheckWin == bufferKartu:
+            if winCheckCounter == 20:
+                mixer.music.pause()
+                if game.player_state == "Win" and game.computer_state == "Lose":
+                    drawSave.text((IM_WIDTH//2 - 110, IM_HEIGHT//2 - 60), "You Win!", font=font_casino_state, fill=white,
+                            stroke_width=3, stroke_fill=black)
+                    mixer.Sound.play(winSFX)
+                    
+                elif game.player_state == "Lose" and game.computer_state == "Win":
+                    drawSave.text((IM_WIDTH//2 - 110, IM_HEIGHT//2 - 60), "You Lose!", font=font_casino_state, fill=white,
+                            stroke_width=3, stroke_fill=black)
+                    mixer.Sound.play(loseSFX)
+                else:
+                    drawSave.text((IM_WIDTH//2-120, IM_HEIGHT//2 - 60), "Draw!", font=font_casino_state, fill=white,
+                            stroke_width=3, stroke_fill=black)
+                    mixer.Sound.play(winSFX)
+                    
+                drawSave.text((IM_WIDTH//2 - 200, IM_HEIGHT//2 + 20), "Press Y to save state!", font=font_casino, fill=white,
+                            stroke_width=3, stroke_fill=black)
+                drawSave.text((IM_WIDTH//2 - 220, IM_HEIGHT//2 + 60), "Press N if state is false!", font=font_casino, fill=white,
+                            stroke_width=3, stroke_fill=black)
+                drawSave.text((IM_WIDTH//2 - 185, IM_HEIGHT//2 + 100), "Press Q to quit game!", font=font_casino, fill=white,
+                            stroke_width=3, stroke_fill=black)
+                
+                cv2.imshow("Video", np.array(imagePilSave))
+                
+                state = cv2.waitKey(0)
+                if state == ord("y") or state == ord("Y"):
+                    if game.player_state == "Win" and game.computer_state == "Lose":
+                        playerWins += 1
+                    elif game.player_state == "Lose" and game.computer_state == "Win":
+                        computerWins += 1
+                    mixer.music.unpause()
+                elif state == ord("n") or state == ord("N"):
+                    mixer.music.unpause()
+                elif state == ord("q") or state == ord("Q"):
+                    break
+                else:
+                    print("Invalid Input, continuing...")
+                    pass
+                winCheckCounter = 0
+            else:
+                winCheckCounter += 1
+        else:
+            winCheckCounter = 0
+    
     # Show Video
     image = np.array(image_pil)
     cv2.imshow("Video", image)
-
-    # Uncomment untuk lihat deteksi kartu
-    # if (len(bufferKartu) > 0):
-    #     if (isinstance(bufferKartu[0].angka, np.ndarray) and len(bufferKartu[0].angka.shape) == 3):
-    #         cv2.imshow("Threshold", bufferKartu[0].angka)
+    frameCounter += 1
 
     # Program Keluar
     key = cv2.waitKey(1) & 0xFF

@@ -232,6 +232,7 @@ def game(kartu):
         else:
             permainan.computer_state = "Safe"
 
+        # Check Wins
         if permainan.player_state == "Blackjack" and permainan.computer_state == "Blackjack":
             permainan.player_state = "Draw"
             permainan.computer_state = "Draw"
@@ -261,6 +262,15 @@ def game(kartu):
                 permainan.player_state = "Draw"
                 permainan.computer_state = "Draw"
     else:
+        # Computer Decision
+        if permainan.point_computer < 17:
+            permainan.computer_state = "Hit"
+        elif permainan.point_computer < permainan.point_player and permainan.point_player < 20:
+            permainan.computer_state = "Hit"
+        elif permainan.point_computer >= 17 and permainan.point_computer <= 21:
+            permainan.computer_state = "Stand"
+
+        # Kartu Dealer kurang dari 2
         if permainan.point_player == 21:
             permainan.player_state = "Blackjack"
         elif permainan.point_player > 21:
@@ -276,6 +286,10 @@ def game(kartu):
             permainan.computer_state = "Draw"
 
     return permainan
+
+def sortKartu(kartu):
+    kartu = sorted(kartu, key=lambda kartu: SORT.index(kartu.prediksi_angka))
+    return kartu
 
 # * Ubah Image menjadi Binary dan Cari Edge
 def imageBinaryEdge(image):
