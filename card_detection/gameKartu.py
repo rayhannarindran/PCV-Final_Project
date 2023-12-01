@@ -25,7 +25,7 @@ font_casino = ImageFont.truetype(fontpath_casino, 40)
 font_casino_state = ImageFont.truetype(fontpath_casino, 70)
 font_cards = ImageFont.truetype(fontpath_cards, 40)
 
-black = (0,0,0,0)
+black = (0,0,0,0) # Preset warna
 red = (0,0,200,0)
 white = (255,255,255,0)
 purple = (200,0,200,0)
@@ -48,8 +48,8 @@ loseSFX = mixer.Sound(loseAudio)
 frameCounter = 0
 detectionTimer = time.time()
 winCheckCounter = 0 # Jika state Win atau Lose, maka akan menunggu 60 frame untuk mengecek input
-bufferKartu = []
-bufferKartuCheckWin = []
+bufferKartu = [] # Buffer kartu, agar tidak lagging
+bufferKartuCheckWin = [] # Buffer kartu untuk mengecek win
 
 # Wins
 playerWins = 0
@@ -163,7 +163,7 @@ while(True):
     draw.text((IM_WIDTH//2 + 30, IM_HEIGHT//2 + 15), "Wins: " + str(computerWins), font=font_casino, fill=purple,
                 stroke_width=3, stroke_fill=white)
 
-    # * Check Wins
+    # * CEK WINS
     if frameCounter % 10 == 0:
         bufferKartuCheckWin = bufferKartu
         bufferKartuCheckWin = dk.sortKartu(bufferKartuCheckWin)

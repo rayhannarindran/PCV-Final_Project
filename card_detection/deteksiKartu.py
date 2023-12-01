@@ -287,6 +287,7 @@ def game(kartu):
 
     return permainan
 
+# * Menyortir kartu berdasarkan angka (2 - A)
 def sortKartu(kartu):
     kartu = sorted(kartu, key=lambda kartu: SORT.index(kartu.prediksi_angka))
     return kartu

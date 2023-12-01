@@ -1,12 +1,7 @@
 THIS IS TESTING BRANCH!
-1. Add better UI (card listing, better separation, background casino?)
-2. Train lebih banyak gambar based on new codebase, detection still gets weird sometimes.
-3. Add SFX
-4. Better Detection how?
+1. Better Detection how? Lighting?
 
 Jadwal Demo:
 1. 13/November/2023 - 50% Code, Deteksi Kartu
 2. 20/November/2023 - 100% Code, Blackjack Mechanism
 3. 27/November/2023 - Added COM Decision Making
-
-TULIS WINS CODE
