@@ -7,11 +7,12 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 # Model CNN
 MODEL_ANGKA = load_model("./models/modelDeteksiRankKartu")
-MODEL_TINGKAT = load_model("./models/modelDeteksiSuitKartu")
+# MODEL_TINGKAT = load_model("./models/modelDeteksiSuitKartu")
 
 KELAS_ANGKA = ['10', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'J', 'K', 'Q']
-KELAS_TINGKAT = ['Clubs', 'Diamonds', 'Hearts', 'Spades']
+# KELAS_TINGKAT = ['Clubs', 'Diamonds', 'Hearts', 'Spades']
 
+# Urutan Sorting Kartu
 # ! Pastikan AS terakhir dalam penyortiran, sisanya bebas
 SORT = ['0', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'K', 'Q', 'A']
 
