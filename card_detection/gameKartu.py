@@ -169,8 +169,9 @@ while(True):
         bufferKartuCheckWin = dk.sortKartu(bufferKartuCheckWin)
 
     if game.player_state == "Win" or game.player_state == "Lose" or game.computer_state == "Win" or game.computer_state == "Lose" or game.player_state == "Draw" or game.computer_state == "Draw":
-        if bufferKartuCheckWin == bufferKartu:
-            if winCheckCounter == 20:
+        forceEnd = cv2.waitKey(1)
+        if bufferKartuCheckWin == bufferKartu or forceEnd == ord("e") or forceEnd == ord("E"):
+            if winCheckCounter == 20 or forceEnd == ord("e") or forceEnd == ord("E"):
                 mixer.music.pause()
                 if game.player_state == "Win" and game.computer_state == "Lose":
                     drawSave.text((IM_WIDTH//2 - 110, IM_HEIGHT//2 - 60), "You Win!", font=font_casino_state, fill=white,
